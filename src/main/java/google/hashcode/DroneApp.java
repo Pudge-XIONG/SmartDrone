@@ -1,9 +1,7 @@
 package google.hashcode;
 
-import org.apache.camel.main.Main;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -75,12 +73,12 @@ public class DroneApp {
                 } else if(line_num > 3  && line_num <= 3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES ){
                     warehouseIndex = (line_num - 4)/PRODUCT_DES_LINES;
                     Warehouse wh = new Warehouse();
+                    Map<String, Product> productMap = new HashMap<>();
                     if((line_num - 4)%PRODUCT_DES_LINES == 0){
                         // location
-                        Location location = new Location(Integer.parseInt(values[0], Integer.parseInt(values[1]);
+                        Location location = new Location(Integer.parseInt(values[0]), Integer.parseInt(values[1]));
                         wh.setLocation(location);
                     } else{
-                        Map<String, Product> productMap = new HashMap<>();
                         for(int i = 0; i < PRODUCT_TYPE_ACCOUNT; i ++){
                             Product product = new Product();
                             product.setAccount(Integer.parseInt(values[i]));
@@ -93,8 +91,24 @@ public class DroneApp {
                 } else if(line_num == 3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES + 1){
                     ORDER_ACCOUNT = Integer.parseInt(values[0]);
                 } else if( line_num > 3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES + 1
-                        && line_num <= 3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES + ORDER_ACCOUNT * ORDER_DES_LINES){
-
+                        && line_num <= 3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES + 1 + ORDER_ACCOUNT * ORDER_DES_LINES){
+                    Order order = new Order();
+                    Map<String, Product> productMap = new HashMap<>();
+                    int itemsAccount = 0;
+                    int index = line_num - (3 + WAREHOUSE_ACCOUNT * PRODUCT_DES_LINES + 1) - 1;
+                    if(index%ORDER_DES_LINES == 0){
+                        // destinatoin
+                        Location location = new Location(Integer.parseInt(values[0]), Integer.parseInt(values[1]));
+                        order.setLocation(location);
+                    } else if(index%ORDER_DES_LINES == 1){
+                        itemsAccount = Integer.parseInt(values[0]);
+                    } else if(index%ORDER_DES_LINES == 2){
+                        for(int i = 0; i < itemsAccount; i++){
+                            Product product = productMap.get()
+                            Product product = new Product();
+                            product.setType(ProductTypeMap.get(values[i]));
+                        }
+                    }
                 }
 
                 line_num ++;

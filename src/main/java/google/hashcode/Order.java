@@ -7,8 +7,9 @@ import java.util.Map;
  * Created by xq on 18/02/2017.
  */
 public class Order {
-    Location location = null;
-    Map<String, Product> productsMap = new HashMap<>();
+    private Location location = null;
+    private int[] products = new int[10000];
+    private boolean stat = false;
 
     public Location getLocation() {
         return location;
@@ -18,11 +19,19 @@ public class Order {
         this.location = location;
     }
 
-    public Map<String, Product> getProductsMap() {
-        return productsMap;
+    public int[] getProducts() {
+        return products;
     }
 
-    public void setProductsMap(Map<String, Product> productsMap) {
-        this.productsMap = productsMap;
+    public void setProducts(int[] products) {
+        this.products = products;
+    }
+
+    public boolean isStat() {
+        return stat;
+    }
+
+    public void setStat(boolean stat) {
+        this.stat = stat;
     }
 }

@@ -4,18 +4,18 @@ package google.hashcode;
  * Created by xq on 18/02/2017.
  */
 public class ProductType {
-    String type = null;
+    int type = 0;
     int weight = 0;
 
-    public ProductType(String type){
+    public ProductType(int type){
         this.type = type;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 

@@ -7,9 +7,9 @@ import java.util.Map;
  * Created by xq on 18/02/2017.
  */
 public class Warehouse {
-    Location location = null;
+    private Location location = null;
 
-    Map<String, Product> productsMap = new HashMap<>();
+    private int[] products = new int[10000];
 
     public Location getLocation() {
         return location;
@@ -19,11 +19,11 @@ public class Warehouse {
         this.location = location;
     }
 
-    public Map<String, Product> getProductsMap() {
-        return productsMap;
+    public int[] getProducts() {
+        return products;
     }
 
-    public void setProductsMap(Map<String, Product> productsMap) {
-        this.productsMap = productsMap;
+    public void setProducts(int[] products) {
+        this.products = products;
     }
 }
