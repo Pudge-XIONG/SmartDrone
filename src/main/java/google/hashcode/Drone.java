@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Drone {
     Location currentLocation = null;
-    Map<String, Product> productsMap = new HashMap<>();
+    private int[] products;
 
     public Location getCurrentLocation() {
         return currentLocation;
@@ -20,11 +20,11 @@ public class Drone {
         this.currentLocation = currentLocation;
     }
 
-    public void load(Map<String, Product> productsMap){
-
+    public int[] getProducts() {
+        return products;
     }
 
-    public void unload(Map<String, Product> productsMap){
-
+    public void setProducts(int[] products) {
+        this.products = products;
     }
 }

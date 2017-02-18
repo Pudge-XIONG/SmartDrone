@@ -1,14 +1,12 @@
 package google.hashcode;
 
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by xq on 18/02/2017.
  */
 public class Order {
     private Location location = null;
-    private int[] products = new int[10000];
+    private int[] products;
     private boolean stat = false;
 
     public Location getLocation() {

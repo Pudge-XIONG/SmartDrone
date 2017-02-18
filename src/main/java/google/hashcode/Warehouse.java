@@ -1,15 +1,12 @@
 package google.hashcode;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by xq on 18/02/2017.
  */
 public class Warehouse {
     private Location location = null;
 
-    private int[] products = new int[10000];
+    private int[] products;
 
     public Location getLocation() {
         return location;
