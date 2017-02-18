@@ -27,4 +27,13 @@ public class Location {
     public void setColumn(int column) {
         this.column = column;
     }
+
+    public int getDistance(Location location){
+        int rowDif = location.getRow() - row;
+        int columnDif = location.getColumn() - column;
+        double d_distance = Math.sqrt(rowDif*rowDif + columnDif*columnDif);
+        int distance = (int)d_distance;
+        if(d_distance > distance) distance ++;
+        return distance;
+    }
 }
