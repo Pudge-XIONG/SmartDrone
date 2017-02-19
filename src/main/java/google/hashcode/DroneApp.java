@@ -66,6 +66,7 @@ public class DroneApp {
                 } else if(line_num == 2){
                     for(int i = 0; i < productTypes.length; i ++){
                         productTypes[i] = new ProductType(i);
+                        productTypes[i].setType(i);
                         productTypes[i].setWeight(Integer.parseInt(values[i]));
                     }
 
@@ -79,9 +80,8 @@ public class DroneApp {
                     } else{
                         Warehouse wh = new Warehouse();
                         wh.setLocation(warehouseLocation);
-                        wh.setProducts(new int[productTypes.length]);
                         for(int i = 0; i < productTypes.length; i ++){
-                            wh.getProducts()[i] = Integer.parseInt(values[i]);
+                            wh.getProductMap().put(i, Integer.parseInt(values[i]));
                         }
                         warehouseList.add(wh);
                     }
@@ -99,9 +99,13 @@ public class DroneApp {
                     } else if(index%ORDER_DES_LINES == 2){
                         Order order = new Order();
                         order.setLocation(destination);
-                        order.setProducts(new int[productTypes.length]);
                         for(int i = 0; i < itemsAccount; i++){
-                            order.getProducts()[Integer.parseInt(values[i])] ++;
+                            int productType = Integer.parseInt(values[i]);
+                            int value = 0;
+                            if(order.getProductMap().containsKey(productType)){
+                                value = order.getProductMap().get(productType);
+                            }
+                            order.getProductMap().put(productType, value + 1);
                         }
                         orderList.add(order);
                     }
@@ -114,7 +118,6 @@ public class DroneApp {
             Location location = new Location(initLocation.getRow(), initLocation.getColumn());
             for(int i = 0; i < DRONE_ACCOUNT; i++){
                 Drone drone = new Drone();
-                drone.setProducts(new int[productTypes.length]);
                 drone.setCurrentLocation(location);
                 droneList.add(drone);
             }
