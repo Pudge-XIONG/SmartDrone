@@ -33,7 +33,7 @@ public class DroneApp {
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
-        loadFile("example.in");
+        loadFile("redundancy.in");
     }
 
 
@@ -101,7 +101,7 @@ public class DroneApp {
                         order.setLocation(destination);
                         order.setProducts(new int[productTypes.length]);
                         for(int i = 0; i < itemsAccount; i++){
-                            order.getProducts()[Integer.parseInt(values[0])] ++;
+                            order.getProducts()[Integer.parseInt(values[i])] ++;
                         }
                         orderList.add(order);
                     }

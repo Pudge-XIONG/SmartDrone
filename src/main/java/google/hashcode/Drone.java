@@ -1,10 +1,6 @@
 package google.hashcode;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by xq on 18/02/2017.
  */
