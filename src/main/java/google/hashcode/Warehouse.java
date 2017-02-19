@@ -3,6 +3,12 @@ package google.hashcode;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * Created by xq on 18/02/2017.
  */
@@ -23,4 +29,25 @@ public class Warehouse {
         this.location = location;
     }
 
+
+
+    public boolean unload(Order order) {
+        for (int i : order.getProductMap().keySet()) {
+            if (this.productMap.keySet().contains(i)) {
+                if (order.getProductMap().get(i) > this.getProductMap().get(i) )
+                {
+                    return false;
+                }
+            }
+            else return false;
+        }
+
+        for (int i : order.getProductMap().keySet()) {
+            this.productMap.put(i, this.productMap.get(i) - order.getProductMap().get(i));
+        }
+
+
+
+        return true;
+    }
 }

@@ -33,9 +33,57 @@ public class DroneApp {
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
-        loadFile("redundancy.in");
+        loadFile("example.in");
+        for (Warehouse wh : warehouseList) {
+            System.out.println("Warehouse : (" + wh.getLocation().getRow() + "," + wh.getLocation().getColumn()+")");
+            System.out.println("Sorted OrderList:");
+            List<Order> restOrderList = orderList;
+            sortOrderByWareHouseDistance(restOrderList, wh );
+
+            // debug print sorted order list
+            for (Order order: restOrderList) {
+                System.out.println(order.getLocation().getRow()+","+order.getLocation().getColumn());
+            }
+
+
+            List<Order> availableOrderList = AvailabeOrderList(restOrderList,wh);
+            if (availableOrderList == null) {
+                System.out.println("No available orderList");
+            }
+            else {
+                System.out.println("Available OrderList:");
+                for (Order order: availableOrderList) {
+                    System.out.println(order.getLocation().getRow()+","+order.getLocation().getColumn());
+                }
+
+            }
+
+
+            // deliver(availableOrderList, wh, droneList);
+
+        }
+
     }
 
+    private static void sortOrderByWareHouseDistance(List<Order> restOrderList, Warehouse wh) {
+        restOrderList.sort( (o1, o2) -> o1.getLocation().getDistance(wh.getLocation())
+                                        > o2.getLocation().getDistance(wh.getLocation()) ? + 1
+                                        : o1.getLocation().getDistance(wh.getLocation())
+                                        < o2.getLocation().getDistance(wh.getLocation()) ? -1 : 0 );
+    }
+
+
+    private static List<Order> AvailabeOrderList(List<Order> restOrderList, Warehouse wh) {
+        List<Order> availabeOrders = null;
+        for (Order order : restOrderList) {
+            if (wh.unload(order))
+            {
+                System.out.println("find order!");
+                availabeOrders.add(order);
+            }
+        }
+        return availabeOrders;
+    }
 
     private static void loadFile(String filePath){
         String line;
@@ -66,7 +114,6 @@ public class DroneApp {
                 } else if(line_num == 2){
                     for(int i = 0; i < productTypes.length; i ++){
                         productTypes[i] = new ProductType(i);
-                        productTypes[i].setType(i);
                         productTypes[i].setWeight(Integer.parseInt(values[i]));
                     }
 
@@ -126,6 +173,8 @@ public class DroneApp {
             System.out.println("Error while read line : " + e.getMessage());
         }
     }
+
+
 
 }
 
