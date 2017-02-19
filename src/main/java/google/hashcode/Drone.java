@@ -10,6 +10,28 @@ import java.util.Map;
 public class Drone {
     Location currentLocation = null;
     private Map<Integer, Integer> productMap = new HashMap<>();
+    private boolean statusdelivery = true;
+    private int index = 0;
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+
+    public boolean isStatusdelivery() {
+        return statusdelivery;
+    }
+
+    public void setStatusdelivery(boolean statusdelivery) {
+        this.statusdelivery = statusdelivery;
+    }
+
+
+
 
     public Map<Integer, Integer> getProductMap() {
         return productMap;

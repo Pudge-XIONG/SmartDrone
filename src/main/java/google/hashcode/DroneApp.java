@@ -1,9 +1,15 @@
 package google.hashcode;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Camel Application
@@ -28,12 +34,18 @@ public class DroneApp {
     private static List<Order> orderList = new ArrayList<>();
     private static List<Warehouse> warehouseList = new ArrayList<>();
     private static List<Drone> droneList = new ArrayList<>();
+    private static List<Command> commandList = new ArrayList<>();
 
+
+    private static String INPUT_FILE = "busy_day.in";
+    private static String OUTPUT_FILE = INPUT_FILE + ".out";
     /**
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
-        loadFile("example.in");
+        loadFile(INPUT_FILE);
+
+
         for (Warehouse wh : warehouseList) {
             System.out.println("Warehouse : (" + wh.getLocation().getRow() + "," + wh.getLocation().getColumn()+")");
             System.out.println("Sorted OrderList:");
@@ -42,27 +54,95 @@ public class DroneApp {
 
             // debug print sorted order list
             for (Order order: restOrderList) {
-                System.out.println(order.getLocation().getRow()+","+order.getLocation().getColumn());
+                System.out.print(order.getLocation().getRow()+","+order.getLocation().getColumn()+ " ");
             }
+            System.out.println();
 
 
-            List<Order> availableOrderList = AvailabeOrderList(restOrderList,wh);
-            if (availableOrderList == null) {
+            restOrderList = AvailabeOrderList(restOrderList,wh);
+            if (restOrderList == null) {
                 System.out.println("No available orderList");
             }
             else {
-                System.out.println("Available OrderList:");
-                for (Order order: availableOrderList) {
-                    System.out.println(order.getLocation().getRow()+","+order.getLocation().getColumn());
+                for (Order order : restOrderList) orderList.remove(order);
+                System.out.println("Available OrderList: " + restOrderList.size() );
+                for (Order order: restOrderList) {
+                    System.out.print( order.getLocation().getRow()+","+order.getLocation().getColumn() + " ");
                 }
-
+                System.out.println();
             }
 
-
-            // deliver(availableOrderList, wh, droneList);
-
+            deliver(restOrderList, droneList, wh);
         }
 
+        generateOutput();
+    }
+
+    private static void generateOutput() {
+        List<String> lines = new ArrayList<>();
+        lines.add(""+commandList.size());
+        for (Command cmd : commandList) {
+            String line = "" + cmd.drone + " " + cmd.getType();
+            for (int detail : cmd.getDetails()) {
+                line += " " + detail ;
+            }
+            lines.add(line);
+        }
+
+        Path file = Paths.get(OUTPUT_FILE);
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        }
+        catch (IOException e) {
+            System.out.println("[ERROR] Write file");
+        }
+    }
+
+    private static void deliver(List<Order> restOrderList, List<Drone> droneList, Warehouse wh) {
+        int indexDrone = 0;
+        for (Order order : restOrderList) {
+            int orderPayload = 0;
+            for (int i : order.getProductMap().keySet() ) {
+                orderPayload += order.getProductMap().get(i) * productTypes[i].getWeight();
+            }
+
+            while (orderPayload > 0 && indexDrone< droneList.size() ) {
+                Drone drone = droneList.get(indexDrone);
+                if (drone.isStatusdelivery() && drone.availablePayload() > orderPayload) {
+                    drone.setStatusdelivery(false);
+                    orderPayload = 0;
+                    generateCommand(drone, order, wh);
+                }
+                else {
+                    drone.setStatusdelivery(false);
+                    orderPayload = orderPayload - drone.availablePayload();
+                    generateCommand(drone, order, wh);
+                    indexDrone++;
+                }
+            }
+            indexDrone++;
+        }
+    }
+
+    private static void generateCommand(Drone drone, Order order, Warehouse wh) {
+        for (int i : order.getProductMap().keySet()) {
+            Command command = new Command();
+            command.setDrone(drone.getIndex());
+            command.setType('L');
+            int[] details = { wh.getIndex(), i, order.getProductMap().get(i) };
+            command.setDetails( details );
+            command.printCommand();
+            commandList.add(command);
+        }
+        for (int i : order.getProductMap().keySet()) {
+            Command command = new Command();
+            command.setDrone(drone.getIndex());
+            command.setType('D');
+            int[] details = { order.getIndex(), i, order.getProductMap().get(i) };
+            command.setDetails( details );
+            command.printCommand();
+            commandList.add(command);
+       }
     }
 
     private static void sortOrderByWareHouseDistance(List<Order> restOrderList, Warehouse wh) {
@@ -74,11 +154,10 @@ public class DroneApp {
 
 
     private static List<Order> AvailabeOrderList(List<Order> restOrderList, Warehouse wh) {
-        List<Order> availabeOrders = null;
+        List<Order> availabeOrders = new ArrayList<>();
         for (Order order : restOrderList) {
             if (wh.unload(order))
             {
-                System.out.println("find order!");
                 availabeOrders.add(order);
             }
         }
@@ -126,6 +205,7 @@ public class DroneApp {
                         warehouseLocation = new Location(Integer.parseInt(values[0]), Integer.parseInt(values[1]));
                     } else{
                         Warehouse wh = new Warehouse();
+                        wh.setIndex((line_num - 4) / PRODUCT_DES_LINES);
                         wh.setLocation(warehouseLocation);
                         for(int i = 0; i < productTypes.length; i ++){
                             wh.getProductMap().put(i, Integer.parseInt(values[i]));
@@ -145,6 +225,7 @@ public class DroneApp {
                         itemsAccount = Integer.parseInt(values[0]);
                     } else if(index%ORDER_DES_LINES == 2){
                         Order order = new Order();
+                        order.setIndex(index/ORDER_DES_LINES);
                         order.setLocation(destination);
                         for(int i = 0; i < itemsAccount; i++){
                             int productType = Integer.parseInt(values[i]);
@@ -165,6 +246,7 @@ public class DroneApp {
             Location location = new Location(initLocation.getRow(), initLocation.getColumn());
             for(int i = 0; i < DRONE_ACCOUNT; i++){
                 Drone drone = new Drone();
+                drone.setIndex(i);
                 drone.setCurrentLocation(location);
                 droneList.add(drone);
             }
