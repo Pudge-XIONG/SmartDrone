@@ -36,4 +36,12 @@ public class Location {
         if(d_distance > distance) distance ++;
         return distance;
     }
+
+    public boolean equals(Location location){
+        if(this.row == location.getRow() && this.column == location.getColumn()){
+            return true;
+        } else{
+            return false;
+        }
+    }
 }

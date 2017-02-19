@@ -23,4 +23,24 @@ public class Warehouse {
         this.location = location;
     }
 
+
+    public void unloadFromDrone(int productType, int productAccount){
+        if (productMap.containsKey(productType)) {
+            int warehouseHasProductAccount = productMap.get(productType);
+            productMap.put(productType, warehouseHasProductAccount + productAccount);
+        } else {
+            productMap.put(productType, productAccount);
+        }
+    }
+
+    public void loadToDrone(int productType, int productAccount){
+        int warehouseHasProductAccount = productMap.get(productType);
+        int warehouseProductAccountAfterLoad = warehouseHasProductAccount - productAccount;
+        if(warehouseProductAccountAfterLoad > 0){
+            productMap.put(productType, warehouseProductAccountAfterLoad);
+        } else{
+            productMap.remove(productType);
+        }
+    }
+
 }

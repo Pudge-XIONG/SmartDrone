@@ -25,17 +25,38 @@ public class DroneApp {
     private static final String SEPERATOR = " ";
     public static ProductType[] productTypes;
 
-    private static List<Order> orderList = new ArrayList<>();
-    private static List<Warehouse> warehouseList = new ArrayList<>();
-    private static List<Drone> droneList = new ArrayList<>();
+    public static List<Order> orderList = new ArrayList<>();
+    public static List<Warehouse> warehouseList = new ArrayList<>();
+    public static List<Drone> droneList = new ArrayList<>();
+    public static List<Command> commandList = new ArrayList<>();
 
     /**
      * A main() so we can easily run these routing rules in our IDE
      */
     public static void main(String... args) throws Exception {
         loadFile("redundancy.in");
+
+        // init first commands
+
+
+        // now excute commands
+        int turn = 0;
+        while(turn < MAX_TURN){
+
+            turn ++;
+        }
+
     }
 
+
+    private static int getCentreWarehouse(){
+        int warehouseId = -1;
+        for(Warehouse wh : warehouseList){
+            int totalDistance = 0;
+            //for(Order order : )
+        }
+        return warehouseId;
+    }
 
     private static void loadFile(String filePath){
         String line;

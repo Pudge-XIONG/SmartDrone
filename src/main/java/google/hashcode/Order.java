@@ -31,4 +31,18 @@ public class Order {
     public void setStat(boolean stat) {
         this.stat = stat;
     }
+
+    public void delivered(int productType, int productAccount){
+        int needProductAccount = productMap.get(productType);
+        int needProductAccountAfterDeliver = needProductAccount - productAccount;
+        if(needProductAccountAfterDeliver > 0){
+            productMap.put(productType, needProductAccountAfterDeliver);
+        } else{
+            productMap.remove(productType);
+        }
+
+        if(productMap.size() < 1){
+            stat = true;
+        }
+    }
 }
