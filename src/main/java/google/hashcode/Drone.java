@@ -22,4 +22,14 @@ public class Drone {
     public void setCurrentLocation(Location currentLocation) {
         this.currentLocation = currentLocation;
     }
+
+    public int availablePayload(){
+        int availablePayload = DroneApp.MAX_LOAD;
+        for(int key : productMap.keySet()){
+            int payload = productMap.get(key) * DroneApp.productTypes[key].getWeight();
+            availablePayload -= payload;
+        }
+
+        return availablePayload;
+    }
 }
