@@ -15,7 +15,7 @@ public class DroneApp {
 
     private static int DRONE_ACCOUNT;
     private static int MAX_TURN;
-    private static int MAX_LOAD;
+    public static int MAX_LOAD;
     private static int WAREHOUSE_ACCOUNT;
     private static int ORDER_ACCOUNT;
 
@@ -23,7 +23,7 @@ public class DroneApp {
     private static final int ORDER_DES_LINES = 3;
 
     private static final String SEPERATOR = " ";
-    private static ProductType[] productTypes;
+    public static ProductType[] productTypes;
 
     private static List<Order> orderList = new ArrayList<>();
     private static List<Warehouse> warehouseList = new ArrayList<>();
