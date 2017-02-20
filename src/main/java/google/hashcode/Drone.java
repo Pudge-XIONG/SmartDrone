@@ -8,16 +8,52 @@ import java.util.Map;
  * Created by xq on 18/02/2017.
  */
 public class Drone {
-    Location currentLocation = null;
+    private int id;
     private Map<Integer, Integer> productMap = new HashMap<>();
-    int currentTurn;
+    int comsumedTurn = DroneApp.MAX_TURN;
+    boolean isAvailable = true;
+    boolean isAtWarehouse = true;
+    int currentLocationWarehouseOrOrderId = 0;
 
-    public int getCurrentTurn() {
-        return currentTurn;
+
+    public int getId() {
+        return id;
     }
 
-    public void setCurrentTurn(int currentTurn) {
-        this.currentTurn = currentTurn;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isAtWarehouse() {
+        return isAtWarehouse;
+    }
+
+    public void setAtWarehouse(boolean atWarehouse) {
+        isAtWarehouse = atWarehouse;
+    }
+
+    public int getCurrentLocationWarehouseOrOrderId() {
+        return currentLocationWarehouseOrOrderId;
+    }
+
+    public void setCurrentLocationWarehouseOrOrderId(int currentLocationWarehouseOrOrderId) {
+        this.currentLocationWarehouseOrOrderId = currentLocationWarehouseOrOrderId;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
+    public int getComsumedTurn() {
+        return comsumedTurn;
+    }
+
+    public void setComsumedTurn(int comsumedTurn) {
+        this.comsumedTurn = comsumedTurn;
     }
 
     public Map<Integer, Integer> getProductMap() {
@@ -25,14 +61,18 @@ public class Drone {
     }
 
     public Location getCurrentLocation() {
-        return currentLocation;
+        if(currentLocationWarehouseOrOrderId == -1){
+            return null;
+        } else{
+            if(isAtWarehouse){
+                return DroneApp.warehouseList.get(currentLocationWarehouseOrOrderId).getLocation();
+            } else{
+                return DroneApp.orderList.get(currentLocationWarehouseOrOrderId).getLocation();
+            }
+        }
     }
 
-    public void setCurrentLocation(Location currentLocation) {
-        this.currentLocation = currentLocation;
-    }
-
-    public int availablePayload(){
+    public int getAvailablePayload(){
         int availablePayload = DroneApp.MAX_LOAD;
         for(int key : productMap.keySet()){
             int payload = productMap.get(key) * DroneApp.productTypes[key].getWeight();

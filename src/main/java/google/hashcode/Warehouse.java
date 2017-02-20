@@ -7,6 +7,7 @@ import java.util.Map;
  * Created by xq on 18/02/2017.
  */
 public class Warehouse {
+    private int id;
     private Location location = null;
 
     private Map<Integer, Integer> productMap = new HashMap<>();
@@ -41,6 +42,33 @@ public class Warehouse {
         } else{
             productMap.remove(productType);
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getProductAccountAfterNTurn(int productType, int turn){
+        int productAccountAfterNTurn = 0;
+        for(Command command : DroneApp.commandList){
+            if(!command.isCommandFinished()
+                    && (command.getCommandType()==Command.LOAD_COMMAND || command.getCommandType()==Command.UNLOAD_COMMAND)
+                    && command.getWarehouseId() == this.id && command.getProductType() == productType){
+                if(command.getTurnLeftBeforeFinish() <= turn){
+                    if(command.getCommandType()==Command.LOAD_COMMAND){
+                        productAccountAfterNTurn = productMap.get(productType) - command.getProductAccount();
+                    } else{
+                        productAccountAfterNTurn = productMap.get(productType) + command.getProductAccount();
+                    }
+                }
+            }
+        }
+
+        return productAccountAfterNTurn;
     }
 
 }

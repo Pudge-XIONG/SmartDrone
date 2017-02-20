@@ -20,45 +20,109 @@ public class Command {
     private boolean commandFinished = false;
     private int distance;
 
+    private int turnLeftBeforeFinish = 0;
 
-    private void executeOneTurn(){
+    public static Command createWaitCommand(int droneId, int waitTurns){
+        Command command = new Command();
+        command.setDroneId(droneId);
+        command.setWaitTurns(waitTurns);
+        command.setCommandType(WAIT_COMMAND);
+        command.setTurnLeftBeforeFinish(waitTurns);
+
+        return command;
+    }
+
+
+    public static Command createCommand(int droneId, char commandType, int warehouseOrOrderId, int productType, int productAccount){
+        Command command = new Command();
+        command.setCommandType(commandType);
+        Location location = null;
+        if(commandType == LOAD_COMMAND || commandType == UNLOAD_COMMAND){
+            command.setWarehouseId(warehouseOrOrderId);
+            location = DroneApp.warehouseList.get(warehouseOrOrderId).getLocation();
+            if(commandType == LOAD_COMMAND){
+                DroneApp.droneList.get(droneId).load(productType, productAccount);
+                DroneApp.warehouseList.get(warehouseOrOrderId).loadToDrone(productType, productAccount);
+            }
+        } else{
+            command.setOrderId(warehouseOrOrderId);
+            location = DroneApp.orderList.get(warehouseOrOrderId).getLocation();
+            DroneApp.orderList.get(warehouseOrOrderId).delivered(productType, productAccount);
+        }
+        command.setProductType(productType);
+        command.setProductAccount(productAccount);
+        int distance = DroneApp.droneList.get(droneId).getCurrentLocation().getDistance(location);
+        command.setDistance(distance);
+        command.setTurnLeftBeforeFinish(distance + 1);
+
+        return command;
+    }
+
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public int getTurnLeftBeforeFinish() {
+        return turnLeftBeforeFinish;
+    }
+
+    public void setTurnLeftBeforeFinish(int turnLeftBeforeFinish) {
+        this.turnLeftBeforeFinish = turnLeftBeforeFinish;
+    }
+
+    public void executeOneTurn(){
+        turnLeftBeforeFinish --;
+        Drone drone = DroneApp.droneList.get(droneId);
+        drone.setAvailable(false);
+        drone.setComsumedTurn(drone.getComsumedTurn() - 1);
         if(commandFinished != true){
             if(commandType == WAIT_COMMAND) {
                 if(currentWaitedTurns < waitTurns){
                     currentWaitedTurns ++;
                     if(currentWaitedTurns >= waitTurns){
                         commandFinished = true;
+                        drone.setAvailable(true);
                     }
                 }
             } else if(commandType == UNLOAD_COMMAND){
                 if(distance > 1){
-                    DroneApp.droneList.get(droneId).setCurrentLocation(new Location(-1, -1));
+                    drone.setCurrentLocationWarehouseOrOrderId(-1);
                     distance --;
                 } else {
-                    DroneApp.droneList.get(droneId).setCurrentLocation(DroneApp.warehouseList.get(warehouseId).getLocation());
-                    DroneApp.droneList.get(droneId).unload(productType, productAccount);
+                    drone.setAtWarehouse(true);
+                    drone.setCurrentLocationWarehouseOrOrderId(warehouseId);
+                    drone.unload(productType, productAccount);
                     DroneApp.warehouseList.get(warehouseId).unloadFromDrone(productType, productAccount);
                     commandFinished = true;
+                    drone.setAvailable(true);
                 }
             } else if(commandType == LOAD_COMMAND){
                 if(distance > 1){
-                    DroneApp.droneList.get(droneId).setCurrentLocation(new Location(-1, -1));
+                    drone.setCurrentLocationWarehouseOrOrderId(-1);
                     distance --;
                 } else{
-                    DroneApp.droneList.get(droneId).setCurrentLocation(DroneApp.warehouseList.get(warehouseId).getLocation());
-                    DroneApp.droneList.get(droneId).load(productType, productAccount);
-                    DroneApp.warehouseList.get(warehouseId).loadToDrone(productType, productAccount);
+                    drone.setAtWarehouse(true);
+                    drone.setCurrentLocationWarehouseOrOrderId(warehouseId);
+                    //drone.load(productType, productAccount);
+                    //DroneApp.warehouseList.get(warehouseId).loadToDrone(productType, productAccount);
                     commandFinished = true;
+                    drone.setAvailable(true);
                 }
             } else if(commandType == DELIVER_COMMAND){
                 if(distance > 1){
-                    DroneApp.droneList.get(droneId).setCurrentLocation(new Location(-1, -1));
+                    drone.setCurrentLocationWarehouseOrOrderId(-1);
                     distance --;
                 } else{
-                    DroneApp.droneList.get(droneId).setCurrentLocation(DroneApp.orderList.get(orderId).getLocation());
-                    DroneApp.droneList.get(droneId).deliver(productType, productAccount);
-                    DroneApp.orderList.get(orderId).delivered(productType, productAccount);
+                    drone.setAtWarehouse(false);
+                    drone.setCurrentLocationWarehouseOrOrderId(orderId);
+                    drone.deliver(productType, productAccount);
                     commandFinished = true;
+                    drone.setAvailable(true);
                 }
             }
 
